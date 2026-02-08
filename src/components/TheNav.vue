@@ -1,23 +1,36 @@
 <template>
   <nav class="flex flex-wrap gap-10 items-center">
-    <li
-      class="flex items-center gap-2 px-6 py-2 rounded-full bg-slate-800 text-white font-black tracking-tight transition-all duration-300 hover:scale-110 hover:bg-slate-700 hover:shadow-xl cursor-pointer active:scale-95"
+    <NavItem
+      v-for="(icon, page) in navItems"
+      :key="page"
+      v-bind:href="`#${page}`"
+      :class="{ 'pointer-events-none': page == currentPage }"
+      @click="currentPage = page"
     >
-      <HomeIcon class="size-5" /><span> Home Page</span>
-    </li>
-    <li
-      class="flex items-center gap-2 px-6 py-2 rounded-full bg-slate-800 text-white font-black tracking-tight transition-all duration-300 hover:scale-110 hover:bg-slate-700 hover:shadow-xl cursor-pointer active:scale-95"
-    >
-      <RectangleStackIcon class="size-5" /><span> Catalog</span>
-    </li>
-    <li
-      class="flex items-center gap-2 px-6 py-2 rounded-full bg-slate-800 text-white font-black tracking-tight transition-all duration-300 hover:scale-110 hover:bg-slate-700 hover:shadow-xl cursor-pointer active:scale-95"
-    >
-      <UserIcon class="size-5" /><span> Profile</span>
-    </li>
+      <component :is="icon" class="size-5" /> {{ page }}
+    </NavItem>
   </nav>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { HomeIcon, RectangleStackIcon, UserIcon } from '@heroicons/vue/24/solid'
+import { PAGE_HOMEPAGE, PAGE_CATALOG, PAGE_PROFILE } from '@/constants.js'
+import NavItem from '@/components/NavItem.vue'
+
+const navItems = {
+  [PAGE_HOMEPAGE]: HomeIcon,
+  [PAGE_CATALOG]: RectangleStackIcon,
+  [PAGE_PROFILE]: UserIcon,
+}
+const currentPage = ref(normalizePageHash())
+
+function normalizePageHash() {
+  const hash = window.location.hash.slice(1)
+  if (Object.keys(navItems).includes(hash)) {
+    return hash
+  } 
+  window.location.hash = PAGE_HOMEPAGE
+  return PAGE_HOMEPAGE
+}
 </script>
